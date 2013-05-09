@@ -1,11 +1,10 @@
 === Plugin Name ===
 Contributors: wppoets, michaeljstutz
-Donate link: http://example.com/
 Tags: redirect, alias, aliases, 404, content alias, redirect content
 Requires at least: 3.5
 Tested up to: 3.5.1
 Stable tag: 1.0
-License: GPLv2
+License: GPLv2 (dual-licensed)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Adds content alias 301 redirect functionality to all the WordPress content types for your site. 

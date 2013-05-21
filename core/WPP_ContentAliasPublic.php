@@ -37,6 +37,7 @@ class WPP_ContentAliasPublic {
     if(is_404()) {
       $requestPath = WPP_ContentAlias::sanitizeUrlPath($_SERVER['REQUEST_URI']);
       $findPost = array(
+        'post_type'         => 'any',
         'numberposts'       => '1',
         'suppress_filters'  => true,
         'fields'            => 'ids',

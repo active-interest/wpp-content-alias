@@ -140,7 +140,10 @@ class WPP_ContentAliasAdmin {
           return false;
         });
         $('.wppca-remove-row').on('click', function() {
-          $(this).parents('tr').remove();
+          var agree = confirm("Are you sure you want to remove the alias?");
+          if(agree) {
+            $(this).parents('tr').remove();
+          }
           return false;
         });
         $('#wppca-save-button').click(function(e) {

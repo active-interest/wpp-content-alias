@@ -19,10 +19,11 @@
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
 class WPP_ContentAliasAdmin {
+  /** Used to keep the init state of the class */
   private static $_initialized = false;
   
   /*
-   *  
+   * 
    */
   public static function init() {
     if(self::$_initialized) return;
@@ -84,7 +85,7 @@ class WPP_ContentAliasAdmin {
    */
   
   public static function save_post($postId) {
-    if(true) return; // Disable the below logic because we are not finished with the interface yet
+    //if(true) return; // Disable the below logic because we are not finished with the interface yet
     
     if(!current_user_can('edit_page', $postId)) return; //Check users permissions
     if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return; //Check skip if we are only auto saving
@@ -94,7 +95,7 @@ class WPP_ContentAliasAdmin {
     delete_post_meta($postId, WPP_ContentAlias::postmetaAlias); //Start off by deleting any excisting values
     if(isset($_POST[WPP_ContentAlias::metaboxAliases]) && !empty($_POST[WPP_ContentAlias::metaboxAliases])) {
       $postAliases = $_POST[WPP_ContentAlias::metaboxAliases];
-      if(isarray($postAliases)) {
+      if(is_array($postAliases)) {
         foreach($postAliases as $postAlias) {
           WPP_ContentAlias::addAlias($postId, $postAlias);
         }
@@ -126,19 +127,69 @@ class WPP_ContentAliasAdmin {
   public static function displayMetabox($post) {
     wp_nonce_field(plugin_basename(__FILE__), WPP_ContentAlias::metaboxNoncename);
     $postAliases = get_post_meta($post->ID, WPP_ContentAlias::postmetaAlias, false);
-    
-    if(!class_exists('WPP_ContentAliasListTable')) require_once(WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/WPP_ContentAliasListTable.php');
-
-    $tableData = array();
-    foreach($postAliases as $postAlias) {
-      $tableData[] = array('url' => $postAlias);
+    // Start HTML for meta boxes ?>
+    <script type="text/javascript">
+      /* <![CDATA[ */
+      jQuery(document).ready(function($){
+        $('.wppca-add-row').on('click', function() {
+          var row = $('.wppca-empty-row.empty-row.screen-reader-text').clone(true);
+          row.removeClass('wppca-empty-row empty-row screen-reader-text');
+          row.insertBefore('#wppca-bottom-row');
+          return false;
+        });
+        $('.wppca-remove-row').on('click', function() {
+          $(this).parents('tr').remove();
+          return false;
+        });
+        $('#wppca-save-button').click(function(e) {
+          e.preventDefault();
+          $('#publish').click();
+        });
+      });
+      /* ]]> */
+    </script>
+    <table id="wppca-aliase-list" width="100%">
+    <thead>
+      <tr>
+        <th width="90%">Aliases</th>
+        <th width="2%"><input type="button" class="wppca-add-row" value="+" /></th>
+      </tr>
+    </thead>
+    <tbody>
+    <?php // Pause HTML
+    if(empty($postAliases)) {
+    // Resume HTML ?>
+    <tr>
+      <td><input type="text" class="widefat" name="<?php echo WPP_ContentAlias::metaboxAliases; ?>[]" /></td>
+      <td><a class="button wppca-remove-row" href="#">-</a></td>
+    </tr>
+    <?php // Pause HTML
+    } else {
+      foreach($postAliases as $postAliase) {
+    // Resume HTML ?>
+    <tr>
+      <td><input type="text" class="widefat" name="<?php echo WPP_ContentAlias::metaboxAliases; ?>[]" value="<?php echo $postAliase; ?>" readonly/></td>
+      <td><a class="button wppca-remove-row" href="#">-</a></td>
+    </tr>
+    <?php // Pause HTML
+      }
     }
-    
-    $contentTable = new WPP_ContentAliasListTable();
-    $contentTable->set_columns(array('url' => 'URL Paths'));
-    $contentTable->set_data($tableData);
-    $contentTable->prepare_items();
-    $contentTable->display();
+    // Resume HTML ?>
+    <tr id="wppca-bottom-row">
+      <td></td>
+      <td><input type="button" class="wppca-add-row" value="+" /></td>
+    </tr>
+    <!-- hidden one for jQuery -->
+    <tr class="wppca-empty-row empty-row screen-reader-text">
+      <td><input type="text" class="widefat" name="<?php echo WPP_ContentAlias::metaboxAliases; ?>[]" /></td>
+      <td><a class="button wppca-remove-row" href="#">-</a></td>
+    </tr>
+    </tbody>
+    </table>
+    <hr />
+    <input type="button" id="wppca-save-button" value="Save" style="float: right;" />
+    <div style="clear: both;"></div>
+    <?php // End HTML for meta boxes
   }
   
   /*

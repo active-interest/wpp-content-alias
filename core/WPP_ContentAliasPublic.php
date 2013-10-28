@@ -19,23 +19,30 @@
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
 class WPP_ContentAliasPublic {
+  /** Used to keep the init state of the class */
   private static $_initialized = false;
 
-  /*
-   *  
+  /**
+   * Initialization point for the static class
+   * 
+   * @return void No return value 
    */
   public static function init() {
-    if(self::$_initialized) return;
+    if (self::$_initialized) {
+      return;
+    }
     add_action('template_redirect', array(__CLASS__, 'template_redirect'));
     self::$_initialized = true;
   }
   
-  /*
-   *  
+  /**
+   * Primary function for checking to see if a redirect is present
+   * 
+   * @return void No return value 
    */
   public static function template_redirect() {
     if(is_404()) {
-      $requestPath = WPP_ContentAlias::sanitizeUrlPath($_SERVER['REQUEST_URI']);
+      $requestPath = WPP_ContentAlias::sanitizeUrlPath(filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL));
       $findPost = array(
         'post_type'         => 'any',
         'numberposts'       => '1',
@@ -54,18 +61,11 @@ class WPP_ContentAliasPublic {
         $wpQuery->next_post();
         $redirectUrl = get_permalink($wpQuery->post);
         if(!empty($redirectUrl)) {
-          if(WPP_ContentAlias::isTracking()) self::logRedirect($redirectUrl);
-          wp_redirect($redirectUrl,WPP_ContentAlias::redirectCode);
+          do_action(WPP_ContentAlias::actionUrlRedirect, array('requestPath'=>$requestPath, 'post'=>$wpQuery->post));
+          wp_redirect($redirectUrl, WPP_ContentAlias::publicRedirectCode);
           exit();
         }
       }
     }
-  }
-  
-  /*
-   *  
-   */
-  private static function logRedirect($redirectUrl) {
-    //TODO: add the code for loging the redirect
   }
 }

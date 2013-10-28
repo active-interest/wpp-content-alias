@@ -132,9 +132,11 @@ class WPP_ContentAliasAdmin {
       /* <![CDATA[ */
       jQuery(document).ready(function($){
         $('.wppca-add-row').on('click', function() {
-          var row = $('.wppca-empty-row.empty-row.screen-reader-text').clone(true);
-          row.removeClass('wppca-empty-row empty-row screen-reader-text');
-          row.insertBefore('#wppca-bottom-row');
+          console.log('something clicked');
+          var row = $('#wppca-empty-row').clone(true);
+          row.removeAttr('id');
+          row.removeClass('empty-row screen-reader-text');
+          row.insertBefore('#wppca-empty-row');
           return false;
         });
         $('.wppca-remove-row').on('click', function() {
@@ -148,11 +150,11 @@ class WPP_ContentAliasAdmin {
       });
       /* ]]> */
     </script>
-    <table id="wppca-aliase-list" width="100%">
+    <table id="wppca-alias-list" width="100%">
     <thead>
       <tr>
         <th width="90%">Aliases</th>
-        <th width="2%"><input type="button" class="wppca-add-row" value="+" /></th>
+        <th width="2%"><button class="button button-primary wppca-add-row" style="font-weight: normal;">+</button></th>
       </tr>
     </thead>
     <tbody>
@@ -165,29 +167,30 @@ class WPP_ContentAliasAdmin {
     </tr>
     <?php // Pause HTML
     } else {
-      foreach($postAliases as $postAliase) {
+      foreach($postAliases as $postAlias) {
     // Resume HTML ?>
     <tr>
-      <td><input type="text" class="widefat" name="<?php echo WPP_ContentAlias::metaboxAliases; ?>[]" value="<?php echo $postAliase; ?>" readonly/></td>
+      <td><input type="text" class="widefat" name="<?php echo WPP_ContentAlias::metaboxAliases; ?>[]" value="<?php echo $postAlias; ?>" readonly/></td>
       <td><a class="button wppca-remove-row" href="#">-</a></td>
     </tr>
     <?php // Pause HTML
       }
     }
     // Resume HTML ?>
-    <tr id="wppca-bottom-row">
-      <td></td>
-      <td><input type="button" class="wppca-add-row" value="+" /></td>
-    </tr>
-    <!-- hidden one for jQuery -->
-    <tr class="wppca-empty-row empty-row screen-reader-text">
+    <tr id="wppca-empty-row" class="empty-row screen-reader-text">
       <td><input type="text" class="widefat" name="<?php echo WPP_ContentAlias::metaboxAliases; ?>[]" /></td>
-      <td><a class="button wppca-remove-row" href="#">-</a></td>
+      <td><button class="button wppca-remove-row">-</button></td>
     </tr>
     </tbody>
+    <tfoot>
+      <tr id="wppca-bottom-row">
+        <td></td>
+        <td><button class="button button-primary wppca-add-row">+</button></td>
+      </tr>
+    </tfoot>
     </table>
     <hr />
-    <input type="button" id="wppca-save-button" value="Save" style="float: right;" />
+    <button id="wppca-save-button" class="button button-primary" value="Save" style="float: right;">Save</button>
     <div style="clear: both;"></div>
     <?php // End HTML for meta boxes
   }

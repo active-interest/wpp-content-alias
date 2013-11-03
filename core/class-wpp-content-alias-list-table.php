@@ -21,7 +21,7 @@ if(!class_exists('WP_List_Table')) require_once(ABSPATH.'wp-admin/includes/class
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class WPP_ContentAliasListTable extends WP_List_Table {
+class WPP_Content_AliasListTable extends WP_List_Table {
   private $columns;
   private $data;
   
@@ -42,7 +42,7 @@ class WPP_ContentAliasListTable extends WP_List_Table {
    *  
    */
   public function set_data($newData) {
-    WPP_ContentAlias::debug($newData);
+    WPP_Content_Alias::debug($newData);
     $this->data = $newData;
   }
   

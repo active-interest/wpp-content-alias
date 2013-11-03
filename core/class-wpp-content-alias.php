@@ -23,7 +23,7 @@
  * @author Michael Stutz <michaeljstutz@gmail.com>
  * 
  */
-class WPP_ContentAlias {
+class WPP_Content_Alias {
   /** Used to keep the init state of the class */
   private static $_initialized = false; 
   /** Used to store the plugin settings */
@@ -56,11 +56,11 @@ class WPP_ContentAlias {
   public static function init() {
     if (self::$_initialized) return;
     if (!is_admin()) {
-      if (!class_exists('WPP_ContentAliasPublic')) require_once(WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/WPP_ContentAliasPublic.php');
-      WPP_ContentAliasPublic::init();
+      if (!class_exists('WPP_Content_Alias_Public')) require_once(WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-public.php');
+      WPP_Content_Alias_Public::init();
     } else {
-      if (!class_exists('WPP_ContentAliasAdmin')) require_once(WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/WPP_ContentAliasAdmin.php');
-      WPP_ContentAliasAdmin::init();
+      if (!class_exists('WPP_Content_Alias_Admin')) require_once(WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-admin.php');
+      WPP_Content_Alias_Admin::init();
     }
     self::$_initialized = true;
   }

@@ -37,5 +37,5 @@ if (!defined('WPP_CONTENT_ALIAS_PLUGIN_FILE')) define('WPP_CONTENT_ALIAS_PLUGIN_
 if (!defined('WPP_CONTENT_ALIAS_PLUGIN_PATH')) define('WPP_CONTENT_ALIAS_PLUGIN_PATH', dirname(__FILE__));
 if (!defined('WPP_CONTENT_ALIAS_FILTER_FILE')) define('WPP_CONTENT_ALIAS_FILTER_FILE', 'wpp-content-alias/wpp-content-alias.php');
 
-if(!class_exists('WPP_ContentAlias')) require_once(WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/WPP_ContentAlias.php');
-WPP_ContentAlias::init();
+if(!class_exists('WPP_Content_Alias')) require_once(WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias.php');
+WPP_Content_Alias::init();

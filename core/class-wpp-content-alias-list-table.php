@@ -42,16 +42,16 @@ class WPP_Content_Alias_List_Table extends WP_List_Table {
 	/**
 	 * 
 	 */
-	public function set_data( $newData ) {
-		WPP_Content_Alias::debug( $newData );
-		$this->data = $newData;
+	public function set_data( $new_data ) {
+		WPP_Content_Alias::debug( $new_data );
+		$this->data = $new_data;
 	}
 	
 	/**
 	 * 
 	 */
-	public function set_columns($newColumns) {
-		$this->columns = $newColumns;
+	public function set_columns( $new_columns ) {
+		$this->columns = $new_columns;
 	}
 	
 	/**

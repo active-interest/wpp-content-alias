@@ -42,7 +42,7 @@ class WPP_Content_Alias_Public {
 	 */
 	public static function template_redirect() {
 		if ( is_404() ) {
-			$requestPath = WPP_Content_Alias::sanitizeUrlPath( filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL ) );
+			$request_path = WPP_Content_Alias::sanitize_url_path( filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL ) );
 			$findPost = array(
 				'post_type'					=> 'any',
 				'numberposts'				=> '1',
@@ -50,19 +50,19 @@ class WPP_Content_Alias_Public {
 				'fields'						=> 'ids',
 				'meta_query'				=> array(
 					array(
-						'key'			=> WPP_Content_Alias::postmetaAlias,
-						'value'		=> $requestPath,
+						'key'			=> WPP_Content_Alias::POSTMETA_CONTENT_ALIAS,
+						'value'		=> $request_path,
 						'compare' => '=',
 					),
 				),
 			);
-			$wpQuery = new WP_Query( $findPost );
-			if ( $wpQuery->have_posts() ) {
-				$wpQuery->next_post();
-				$redirectUrl = get_permalink( $wpQuery->post );
-				if ( ! empty($redirectUrl) ) {
-					do_action( WPP_Content_Alias::actionUrlRedirect, array( 'requestPath' => $requestPath, 'post' => $wpQuery->post) );
-					wp_redirect( $redirectUrl, WPP_Content_Alias::publicRedirectCode );
+			$wp_query = new WP_Query( $findPost );
+			if ( $wp_query->have_posts() ) {
+				$wp_query->next_post();
+				$redirect_url = get_permalink( $wp_query->post );
+				if ( ! empty($redirect_url) ) {
+					do_action( WPP_Content_Alias::ACTION_URL_REDIRECT, array( 'requestPath' => $request_path, 'post' => $wp_query->post) );
+					wp_redirect( $redirect_url, WPP_Content_Alias::DEFAULT_REDIRECT_CODE );
 					exit();
 				}
 			}

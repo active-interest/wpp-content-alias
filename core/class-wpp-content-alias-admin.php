@@ -43,7 +43,7 @@ class WPP_Content_Alias_Admin {
 	 */
 	public static function plugin_action_links( $links ) {
 		$before_links = array();
-		$before_links['settings'] = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=' . WPP_Content_Alias::adminPageRoot . 'settings&tab=primary'), 'Settings' );
+		$before_links['settings'] = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=' . WPP_Content_Alias::ADMIN_PAGE_ROOT . 'settings&tab=primary'), 'Settings' );
 		$after_links = array();
 		return array_merge( $before_links, $links, $after_links );
 	}
@@ -60,19 +60,19 @@ class WPP_Content_Alias_Admin {
 	 */
 	public static function admin_enqueue_scripts() {
 		wp_register_style(
-			WPP_Content_Alias::pluginBaseName . 'AdminCss', 
+			WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminCss', 
 			plugins_url( 'css/wpp-content-alias-admin.css', WPP_CONTENT_ALIAS_PLUGIN_FILE ),
 			'20130501'
 			);
-		wp_enqueue_style( WPP_Content_Alias::pluginBaseName . 'AdminCss' );
+		wp_enqueue_style( WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminCss' );
 		
 		wp_register_script(
-			WPP_Content_Alias::pluginBaseName . 'AdminJs', 
+			WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminJs', 
 			plugins_url( 'js/wpp-content-alias-admin.js', WPP_CONTENT_ALIAS_PLUGIN_FILE ),
 			array( 'jquery', 'jquery-ui-core' ), 
 			'20130501'
 			);
-		wp_enqueue_script( WPP_Content_Alias::pluginBaseName . 'AdminJs' );
+		wp_enqueue_script( WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminJs' );
 	}
 	
 	/**
@@ -83,35 +83,35 @@ class WPP_Content_Alias_Admin {
 			'Settings',
 			'Content Alias',
 			'manage_options',
-			WPP_Content_Alias::adminPageRoot . 'settings',
-			array( __CLASS__, 'displaySettingsPage' )
+			WPP_Content_Alias::ADMIN_PAGE_ROOT . 'settings',
+			array( __CLASS__, 'display_settings_page' )
 		);
 	}
 	
 	/**
 	 * 
 	 */
-	public static function save_post( $postId ) {
+	public static function save_post( $post_id ) {
 		//if(true) return; // Disable the below logic because we are not finished with the interface yet
 		
-		if ( ! current_user_can( 'edit_page', $postId ) ) //Check users permissions
+		if ( ! current_user_can( 'edit_page', $post_id ) ) //Check users permissions
 			return;
 		
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) //Check skip if we are only auto saving
 			return;
 		
-		if ( wp_is_post_revision( $postId ) ) //Check to make sure it is not a revision
+		if ( wp_is_post_revision( $post_id ) ) //Check to make sure it is not a revision
 			return;
 		
-		if ( ! isset( $_POST[ WPP_Content_Alias::metaboxNoncename ] ) || ! wp_verify_nonce( $_POST[ WPP_Content_Alias::metaboxNoncename ], plugin_basename( __FILE__ ) ) ) //Verify the form
+		if ( ! isset( $_POST[ WPP_Content_Alias::METABOX_FORM_NONCENAME ] ) || ! wp_verify_nonce( $_POST[ WPP_Content_Alias::METABOX_FORM_NONCENAME ], plugin_basename( __FILE__ ) ) ) //Verify the form
 			return;
 		
-		delete_post_meta( $postId, WPP_Content_Alias::postmetaAlias ); //Start off by deleting any excisting values
-		if ( isset( $_POST[ WPP_Content_Alias::metaboxAliases ] ) && ! empty( $_POST[ WPP_Content_Alias::metaboxAliases ] ) ) {
-			$postAliases = $_POST[ WPP_Content_Alias::metaboxAliases ];
-			if ( is_array( $postAliases ) ) {
-				foreach( $postAliases as $postAlias ) {
-					WPP_Content_Alias::addAlias( $postId, $postAlias );
+		delete_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS ); //Start off by deleting any excisting values
+		if ( isset( $_POST[ WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES ] ) && ! empty( $_POST[ WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES ] ) ) {
+			$post_aliases = $_POST[ WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES ];
+			if ( is_array( $post_aliases ) ) {
+				foreach( (array) $post_aliases as $post_alias ) {
+					WPP_Content_Alias::add_alias( $post_id, $post_alias );
 				}
 			}
 		}
@@ -122,15 +122,15 @@ class WPP_Content_Alias_Admin {
 	 */
 	public static function add_meta_boxes() {
 		//TODO: add admin section for all or selected post types
-		$postTypes = get_post_types( '','names' );
-		foreach( $postTypes as $postType ) {
+		$post_types = get_post_types( '','names' );
+		foreach( $post_types as $post_type ) {
 			add_meta_box(
-				WPP_Content_Alias::metaboxId,						//$id
-				__( WPP_Content_Alias::metaboxTitle ),	//$title
-				array( __class__, 'displayMetabox' ),		//$callback
-				$postType,															//$post_type
-				WPP_Content_Alias::metaboxContext,			//$context
-				WPP_Content_Alias::metaboxPriority			//priority
+				WPP_Content_Alias::METABOX_ID,						//$id
+				__( WPP_Content_Alias::METABOX_TITLE ),	//$title
+				array( __class__, 'display_metabox' ),		//$callback
+				$post_type,															//$post_type
+				WPP_Content_Alias::METABOX_CONTEXT,			//$context
+				WPP_Content_Alias::METABOX_PRIORITY			//priority
 			);
 		}
 	}
@@ -138,9 +138,9 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * 
 	 */
-	public static function displayMetabox( $post ) {
-		wp_nonce_field( plugin_basename( __FILE__ ), WPP_Content_Alias::metaboxNoncename );
-		$postAliases = get_post_meta( $post->ID, WPP_Content_Alias::postmetaAlias, false );
+	public static function display_metabox( $post ) {
+		wp_nonce_field( plugin_basename( __FILE__ ), WPP_Content_Alias::METABOX_FORM_NONCENAME );
+		$post_aliases = get_post_meta( $post->ID, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS, false );
 		// Start HTML for meta boxes ?>
 		<script type="text/javascript">
 			/* <![CDATA[ */
@@ -176,18 +176,18 @@ class WPP_Content_Alias_Admin {
 		</thead>
 		<tbody>
 		<?php // Pause HTML
-		if ( empty( $postAliases ) ) {
+		if ( empty( $post_aliases ) ) {
 		// Resume HTML ?>
 		<tr>
-			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::metaboxAliases; ?>[]" /></td>
+			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES; ?>[]" /></td>
 			<td><a class="button wppca-remove-row" href="#">-</a></td>
 		</tr>
 		<?php // Pause HTML
 		} else {
-			foreach( $postAliases as $postAlias ) {
+			foreach( $post_aliases as $post_alias ) {
 		// Resume HTML ?>
 		<tr>
-			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::metaboxAliases; ?>[]" value="<?php echo $postAlias; ?>" readonly/></td>
+			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES; ?>[]" value="<?php echo $post_alias; ?>" readonly/></td>
 			<td><a class="button wppca-remove-row" href="#">-</a></td>
 		</tr>
 		<?php // Pause HTML
@@ -195,7 +195,7 @@ class WPP_Content_Alias_Admin {
 		}
 		// Resume HTML ?>
 		<tr id="wppca-empty-row" class="empty-row screen-reader-text">
-			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::metaboxAliases; ?>[]" /></td>
+			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES; ?>[]" /></td>
 			<td><button class="button wppca-remove-row">-</button></td>
 		</tr>
 		</tbody>
@@ -215,13 +215,13 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * 
 	 */
-	public static function displaySettingsPage() {
+	public static function display_settings_page() {
 		if ( isset( $_GET['tab'] ) )
-			$currentTab = $_GET['tab'];
+			$current_tab = $_GET['tab'];
 		else
-			$currentTab = 'primary';
+			$current_tab = 'primary';
 		
-		if ( isset( $_POST[ WPP_Content_Alias::metaboxNoncename ] ) && wp_verify_nonce( $_POST[ WPP_Content_Alias::metaboxNoncename ], plugin_basename( __FILE__ ) ) ) {
+		if ( isset( $_POST[ WPP_Content_Alias::METABOX_FORM_NONCENAME ] ) && wp_verify_nonce( $_POST[ WPP_Content_Alias::METABOX_FORM_NONCENAME ], plugin_basename( __FILE__ ) ) ) {
 			//TODO: add the save logic here
 			print( '<div id="message" class="updated settings-error"><p><strong>Settings saved</strong></p></div>' . "\n" );
 		}
@@ -231,11 +231,11 @@ class WPP_Content_Alias_Admin {
 			<h2>Content Alias</h2>
 			<?php screen_icon(); ?>
 			<h2 class="nav-tab-wrapper">
-				<a href="<?php echo admin_url( 'options-general.php?page=' . WPP_Content_Alias::adminPageRoot . 'settings&tab=primary' ); ?>" class="nav-tab <?php echo $currentTab == 'primary' ? 'nav-tab-active' : ''; ?>">Options</a>
-				<a href="<?php echo admin_url( 'options-general.php?page=' . WPP_Content_Alias::adminPageRoot . 'settings&tab=tracking' ); ?>" class="nav-tab <?php echo $currentTab == 'tracking' ? 'nav-tab-active' : ''; ?>">Tracking</a>
+				<a href="<?php echo admin_url( 'options-general.php?page=' . WPP_Content_Alias::ADMIN_PAGE_ROOT . 'settings&tab=primary' ); ?>" class="nav-tab <?php echo $current_tab == 'primary' ? 'nav-tab-active' : ''; ?>">Options</a>
+				<a href="<?php echo admin_url( 'options-general.php?page=' . WPP_Content_Alias::ADMIN_PAGE_ROOT . 'settings&tab=tracking' ); ?>" class="nav-tab <?php echo $current_tab == 'tracking' ? 'nav-tab-active' : ''; ?>">Tracking</a>
 			</h2>
 			<form method="post" action="">
-			<?php if ( $currentTab == 'primary' ) { ?>
+			<?php if ( $current_tab == 'primary' ) { ?>
 				<h3>Primary Settings</h3>
 				<table class="form-table">
 					<tr valign="top">
@@ -248,10 +248,10 @@ class WPP_Content_Alias_Admin {
 					</tr>
 				</table>
 			<?php
-				wp_nonce_field( plugin_basename( __FILE__ ), WPP_Content_Alias::metaboxNoncename );
+				wp_nonce_field( plugin_basename( __FILE__ ), WPP_Content_Alias::METABOX_FORM_NONCENAME );
 				submit_button();
 			?>
-			<?php } elseif( $currentTab == 'tracking' ) { ?>
+			<?php } elseif( $current_tab == 'tracking' ) { ?>
 				<h3>Tracking Settings</h3>
 				<table class="form-table">
 					<tr valign="top">
@@ -260,22 +260,22 @@ class WPP_Content_Alias_Admin {
 					</tr>
 				</table>
 			<?php
-				wp_nonce_field( plugin_basename( __FILE__ ), WPP_Content_Alias::metaboxNoncename );
+				wp_nonce_field( plugin_basename( __FILE__ ), WPP_Content_Alias::METABOX_FORM_NONCENAME );
 				submit_button();
 				
 				if ( ! class_exists( 'WPP_Content_Alias_List_Table' ) )
 					require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-list-table.php');
 				
-				$statsTable = new WPP_Content_Alias_List_Table();
-				$statsTable->set_columns( array( 'url' => 'URL Paths', 'count' => 'Hits', 'last' => 'Last used', ) );
-				$statsTable->set_data( array( array( 'url'=>'Coming Soon...', ) ) );
-				$statsTable->prepare_items();
+				$stats_table = new WPP_Content_Alias_List_Table();
+				$stats_table->set_columns( array( 'url' => 'URL Paths', 'count' => 'Hits', 'last' => 'Last used', ) );
+				$stats_table->set_data( array( array( 'url'=>'Coming Soon...', ) ) );
+				$stats_table->prepare_items();
 			?>
 			</form>
 			<hr />
 			<h3>Tracking Stats</h3>
 			<p>Top 10 hit URLs...</p>
-			<?php $statsTable->display(); ?>
+			<?php $stats_table->display(); ?>
 			<?php } ?>
 		</div>
 		<?php // End HTML

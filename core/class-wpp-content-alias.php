@@ -29,24 +29,20 @@ class WPP_Content_Alias {
 	/** Used to store the plugin settings */
 	private static $_settings = array();
 	
-	const pluginBaseName			= 'wppContentAlias';
-	const metaboxId						= 'wpp-content-alias';
-	const metaboxTitle				= 'Content Aliases';
-	const metaboxContext			= 'advanced';
-	const metaboxPriority			= 'low';
-	const metaboxNoncename		= 'wpp_content_alias_noncename';
-	const metaboxAliases			= 'wpp_content_alias_aliases';
-	const settingsNoncename		= 'wpp_content_alias_settings_noncename';
-	const postmetaAlias				= '_wpp_content_alias';
-	const adminPageRoot				= 'wpp-content-alias-';
-	const publicRedirectCode	= 301;
-	
-	// Filter Names
-	const filterAddAlias		= 'WPP_Content_Alias_Add_Alias';
-	const filterSanitizeUrl = 'WPP_Content_Alias_Sanitize_Url';
-	
-	// Action Names
-	const actionUrlRedirect = 'WPP_Content_Alias_Url_Redirect';
+	const PLUGIN_BASE_NAME								= 'wppContentAlias';
+	const METABOX_ID										= 'wpp-content-alias';
+	const METABOX_TITLE									= 'Content Aliases';
+	const METABOX_CONTEXT								= 'advanced';
+	const METABOX_PRIORITY							= 'low';
+	const METABOX_FORM_NONCENAME				= 'wpp_content_alias_noncename';
+	const METABOX_FORM_CONTENT_ALIASES	= 'wpp_content_alias_aliases';
+	const SETTINGS_FORM_NONCENAME				= 'wpp_content_alias_settings_noncename';
+	const POSTMETA_CONTENT_ALIAS				= '_wpp_content_alias';
+	const ADMIN_PAGE_ROOT								= 'wpp-content-alias-';
+	const DEFAULT_REDIRECT_CODE					= 301;
+	const FILTER_ADD_ALIAS							= 'WPP_Content_Alias_Add_Alias';
+	const FILTER_SANITIZE_URL						= 'WPP_Content_Alias_Sanitize_Url';
+	const ACTION_URL_REDIRECT						= 'WPP_Content_Alias_Url_Redirect';
 	
 	/**
 	 * Initialization point for the static class
@@ -74,21 +70,21 @@ class WPP_Content_Alias {
 	/**
 	 * General use function for sanitizing a url path
 	 * 
-	 * @param string $urlString String of the url path to sanitize
+	 * @param string $url_string String of the url path to sanitize
 	 * @return string Returns the sanitized url
 	 */
-	public static function sanitizeUrlPath( $urlString ) {
+	public static function sanitize_url_path( $url_string ) {
 		self::init();
-		$urlString = apply_filters( self::filterSanitizeUrl, $urlString );
+		$url_string = apply_filters( self::FILTER_SANITIZE_URL, $url_string );
 		//TODO: add more sanitization here
-		$parsedUrl = parse_url( $urlString );
-		$parsedPath = $parsedUrl['path'];
-		//If the passedPath is not empty and does not start with / add it to the start
-		if ( !empty( $parsedPath ) && strncmp( $parsedPath, '/', 1 ) )
-			$parsedPath = '/' . $parsedPath;
+		$parsed_url = parse_url( $url_string );
+		$parsed_path = $parsed_url['path'];
+		//If the parsed_path is not empty and does not start with / add it to the start
+		if ( !empty( $parsed_path ) && strncmp( $parsed_path, '/', 1 ) )
+			$parsed_path = '/' . $parsed_path;
 		
-		if ( isset( $parsedPath ) && ! empty( $parsedPath ) )
-			return $parsedPath;
+		if ( isset( $parsed_path ) && ! empty( $parsed_path ) )
+			return $parsed_path;
 		
 		else
 			return '';
@@ -97,16 +93,16 @@ class WPP_Content_Alias {
 	/**
 	 * Basic function for adding an alias
 	 * 
-	 * @param int $postId The id of the post to add the alias for
-	 * @param string $postAlias The url path to add as an alias to the post
+	 * @param int $post_id The id of the post to add the alias for
+	 * @param string $post_alias The url path to add as an alias to the post
 	 * @return void No return value
 	 */
-	public static function addAlias( $postId, $postAlias ) {
+	public static function add_alias( $post_id, $post_alias ) {
 		self::init();
-		$postAlias = apply_filters( self::filterAddAlias, $postAlias );
-		$postAliasPath = self::sanitizeUrlPath( $postAlias );
-		if ( ! empty( $postAliasPath ) )
-			add_post_meta( $postId, self::postmetaAlias, $postAliasPath, false );
+		$post_alias = apply_filters( self::FILTER_ADD_ALIAS, $post_alias );
+		$post_alias_path = self::sanitize_url_path( $post_alias );
+		if ( ! empty( $post_alias_path ) )
+			add_post_meta( $post_id, self::POSTMETA_CONTENT_ALIAS, $post_alias_path, false );
 	}
 	
 	/**

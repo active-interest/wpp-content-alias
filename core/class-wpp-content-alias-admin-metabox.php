@@ -22,8 +22,18 @@ class WPP_Content_Alias_Admin_Metabox {
 	/** Used to keep the init state of the class */
 	private static $_initialized = false;
 	
+	const STYLE_BASE                    = 'wppca_metabox';
+	const SCRIPT_BASE                   = 'wppca_metabox';
+	const METABOX_ID                    = 'wppca_metabox';
+	const METABOX_TITLE                 = 'Content Aliases';
+	const METABOX_CONTEXT               = 'advanced';
+	const METABOX_PRIORITY              = 'low';
+	const METABOX_FORM_NONCENAME        = 'wppca_noncename';
+	const METABOX_FORM_CONTENT_ALIASES  = 'wppca_aliases';
+	
 	/**
 	 * 
+	 * @return void No return value
 	 */
 	public static function init() {
 		if ( self::$_initialized ) 
@@ -35,7 +45,15 @@ class WPP_Content_Alias_Admin_Metabox {
 
 		self::$_initialized = true;
 	}
-
+	
+	/**
+	 * 
+	 * @return boolean Returns the value of $_initialized
+	 */
+	public static function isInit() {
+		return self::$_initialized;
+	}
+	
 	/**
 	 * Test to see if we are in a valid location
 	 * 
@@ -50,32 +68,40 @@ class WPP_Content_Alias_Admin_Metabox {
 	
 	/**
 	 * 
+	 * @return void No return value
 	 */
 	public static function admin_enqueue_scripts() {
+		if ( ! self::isInit() ) //Function can not be called before init
+			return;
+		
 		if ( self::valid_location() ) {
+			//Register and Enqueue Style
 			wp_register_style(
-				WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminMetaboxCss', 
+				self::STYLE_BASE, 
 				plugins_url( 'css/wpp-content-alias-admin-metabox.css', WPP_CONTENT_ALIAS_PLUGIN_FILE ),
 				array(),
-				'20130501'
-				);
-			wp_enqueue_style( WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminMetaboxCss' );
-
+				WPP_CONTENT_ALIAS_VERSION_NUM . '.' . WPP_CONTENT_ALIAS_BUILD_NUM
+			);
+			wp_enqueue_style( self::STYLE_BASE );
+			
+			//Register and Enqueue Script
 			wp_register_script(
-				WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminMetaboxJs', 
+				self::SCRIPT_BASE, 
 				plugins_url( 'js/wpp-content-alias-admin-metabox.js', WPP_CONTENT_ALIAS_PLUGIN_FILE ),
 				array( 'jquery', 'jquery-ui-core' ), 
-				'20130501'
-				);
-			wp_enqueue_script( WPP_Content_Alias::PLUGIN_BASE_NAME . 'AdminMetaboxJs' );
+				WPP_CONTENT_ALIAS_VERSION_NUM . '.' . WPP_CONTENT_ALIAS_BUILD_NUM
+			);
+			wp_enqueue_script( self::SCRIPT_BASE );
 		}
 	}
 	
 	/**
 	 * 
+	 * @return void No return value
 	 */
 	public static function save_post( $post_id ) {
-		//if(true) return; // Disable the below logic because we are not finished with the interface yet
+		if ( ! self::isInit() ) //Function can not be called before init
+			return;
 		
 		if ( ! current_user_can( 'edit_page', $post_id ) ) //Check users permissions
 			return;
@@ -86,112 +112,85 @@ class WPP_Content_Alias_Admin_Metabox {
 		if ( wp_is_post_revision( $post_id ) ) //Check to make sure it is not a revision
 			return;
 		
-		if ( ! isset( $_POST[ WPP_Content_Alias::METABOX_FORM_NONCENAME ] ) || ! wp_verify_nonce( $_POST[ WPP_Content_Alias::METABOX_FORM_NONCENAME ], plugin_basename( __FILE__ ) ) ) //Verify the form
+		if ( ! wp_verify_nonce( filter_input( INPUT_POST, self::METABOX_FORM_NONCENAME, FILTER_SANITIZE_STRING ), plugin_basename( __FILE__ ) ) ) //Verify the form
 			return;
 		
 		delete_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS ); //Start off by deleting any excisting values
-		if ( isset( $_POST[ WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES ] ) && ! empty( $_POST[ WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES ] ) ) {
-			$post_aliases = $_POST[ WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES ];
-			if ( is_array( $post_aliases ) ) {
-				foreach( (array) $post_aliases as $post_alias ) {
-					WPP_Content_Alias::add_alias( $post_id, $post_alias );
-				}
+		$post_aliases = filter_input( INPUT_POST, self::METABOX_FORM_CONTENT_ALIASES, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
+		if ( ! empty( $post_aliases ) ) {
+			foreach( (array) $post_aliases as $post_alias ) {
+				WPP_Content_Alias::add_alias( $post_id, $post_alias );
 			}
 		}
 	}
 	
 	/**
 	 * 
+	 * @return void No return value
 	 */
 	public static function add_meta_boxes() {
+		if ( ! self::isInit() ) //Function can not be called before init
+			return;
+				
 		//TODO: add admin section for all or selected post types
+		
 		$post_types = get_post_types( '','names' );
 		foreach( $post_types as $post_type ) {
 			add_meta_box(
-				WPP_Content_Alias::METABOX_ID,					//$id
-				__( WPP_Content_Alias::METABOX_TITLE ),	//$title
+				self::METABOX_ID,												//$id
+				__( self::METABOX_TITLE ),							//$title
 				array( __class__, 'display_metabox' ),	//$callback
 				$post_type,															//$post_type
-				WPP_Content_Alias::METABOX_CONTEXT,			//$context
-				WPP_Content_Alias::METABOX_PRIORITY			//priority
+				self::METABOX_CONTEXT,									//$context
+				self::METABOX_PRIORITY									//priority
 			);
 		}
 	}
 	
 	/**
+	 * Display function for the metabox
 	 * 
+	 * @param Object $post WordPress post object
+	 * @return void No return value
 	 */
 	public static function display_metabox( $post ) {
-		wp_nonce_field( plugin_basename( __FILE__ ), WPP_Content_Alias::METABOX_FORM_NONCENAME );
+		if ( ! self::isInit() ) //Function can not be called before init
+			return;
+		
+		wp_nonce_field( plugin_basename( __FILE__ ), self::METABOX_FORM_NONCENAME );
 		$post_aliases = get_post_meta( $post->ID, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS, false );
 		// Start HTML for meta boxes ?>
-		<script type="text/javascript">
-			/* <![CDATA[ */
-			jQuery(document).ready(function($){
-				$('.wppca-add-row').on('click', function() {
-					console.log('something clicked');
-					var row = $('#wppca-empty-row').clone(true);
-					row.removeAttr('id');
-					row.removeClass('empty-row screen-reader-text');
-					row.insertBefore('#wppca-empty-row');
-					return false;
-				});
-				$('.wppca-remove-row').on('click', function() {
-					var agree = confirm("Are you sure you want to remove the alias?");
-					if(agree) {
-						$(this).parents('tr').remove();
-					}
-					return false;
-				});
-				$('#wppca-save-button').click(function(e) {
-					e.preventDefault();
-					$('#publish').click();
-				});
-			});
-			/* ]]> */
-		</script>
 		<table id="wppca-alias-list" width="100%">
-		<thead>
-			<tr>
+		<thead><tr>
 				<th width="90%">Aliases</th>
 				<th width="2%"><button class="button button-primary wppca-add-row" style="font-weight: normal;">+</button></th>
-			</tr>
-		</thead>
+		</tr></thead>
 		<tbody>
-		<?php // Pause HTML
-		if ( empty( $post_aliases ) ) {
-		// Resume HTML ?>
+		<?php if ( empty( $post_aliases ) ) : ?>
 		<tr>
-			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES; ?>[]" /></td>
+			<td><input type="text" class="widefat" name="<?php echo self::METABOX_FORM_CONTENT_ALIASES; ?>[]" /></td>
 			<td><a class="button wppca-remove-row" href="#">-</a></td>
 		</tr>
-		<?php // Pause HTML
-		} else {
-			foreach( $post_aliases as $post_alias ) {
-		// Resume HTML ?>
+		<?php else : ?>
+			<?php foreach( (array) $post_aliases as $post_alias ) : ?>
 		<tr>
-			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES; ?>[]" value="<?php echo $post_alias; ?>" readonly/></td>
+			<td><input type="text" class="widefat" name="<?php echo self::METABOX_FORM_CONTENT_ALIASES; ?>[]" value="<?php echo $post_alias; ?>" readonly/></td>
 			<td><a class="button wppca-remove-row" href="#">-</a></td>
 		</tr>
-		<?php // Pause HTML
-			}
-		}
-		// Resume HTML ?>
+			<?php endforeach; ?>
+		<?php endif; ?>
 		<tr id="wppca-empty-row" class="empty-row screen-reader-text">
-			<td><input type="text" class="widefat" name="<?php echo WPP_Content_Alias::METABOX_FORM_CONTENT_ALIASES; ?>[]" /></td>
+			<td><input type="text" class="widefat" name="<?php echo self::METABOX_FORM_CONTENT_ALIASES; ?>[]" /></td>
 			<td><button class="button wppca-remove-row">-</button></td>
 		</tr>
 		</tbody>
-		<tfoot>
-			<tr id="wppca-bottom-row">
+		<tfoot><tr id="wppca-bottom-row">
 				<td></td>
 				<td><button class="button button-primary wppca-add-row">+</button></td>
-			</tr>
-		</tfoot>
+		</tr></tfoot>
 		</table>
 		<hr />
-		<button id="wppca-save-button" class="button button-primary" value="Save" style="float: right;">Save</button>
-		<div style="clear: both;"></div>
+		<button id="wppca-save-button" class="button button-primary" value="Save" style="float: right;">Save</button><div style="clear: both;"></div>
 		<?php // End HTML for meta boxes
 	}
 }

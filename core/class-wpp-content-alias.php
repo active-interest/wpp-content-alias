@@ -30,12 +30,6 @@ class WPP_Content_Alias {
 	private static $_settings = array();
 	
 	const PLUGIN_BASE_NAME								= 'wppContentAlias';
-	const METABOX_ID										= 'wpp-content-alias';
-	const METABOX_TITLE									= 'Content Aliases';
-	const METABOX_CONTEXT								= 'advanced';
-	const METABOX_PRIORITY							= 'low';
-	const METABOX_FORM_NONCENAME				= 'wpp_content_alias_noncename';
-	const METABOX_FORM_CONTENT_ALIASES	= 'wpp_content_alias_aliases';
 	const SETTINGS_FORM_NONCENAME				= 'wpp_content_alias_settings_noncename';
 	const POSTMETA_CONTENT_ALIAS				= '_wpp_content_alias';
 	const ADMIN_PAGE_ROOT								= 'wpp-content-alias-';

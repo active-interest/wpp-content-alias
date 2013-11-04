@@ -37,6 +37,9 @@ if ( ! defined( 'ABSPATH' ) ) // We should not be loading this outside of wordpr
 if ( ! defined( 'WPP_CONTENT_ALIAS_VERSION_NUM' ) )
 	define( 'WPP_CONTENT_ALIAS_VERSION_NUM', '0.9' );
 
+if ( ! defined( 'WPP_CONTENT_ALIAS_BUILD_NUM' ) )
+	define( 'WPP_CONTENT_ALIAS_BUILD_NUM', '1' );
+
 if ( ! defined( 'WPP_CONTENT_ALIAS_PLUGIN_FILE' ) )
 	define( 'WPP_CONTENT_ALIAS_PLUGIN_FILE', __FILE__ );
 

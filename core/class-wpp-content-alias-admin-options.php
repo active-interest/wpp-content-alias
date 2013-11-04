@@ -18,7 +18,7 @@
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  */
-class WPP_Content_Alias_Admin_Settings {
+class WPP_Content_Alias_Admin_Options {
 	/** Used to keep the init state of the class */
 	private static $_initialized = false;
 	

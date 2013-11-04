@@ -34,10 +34,10 @@ class WPP_Content_Alias_Admin {
 		
 		WPP_Content_Alias_Admin_Metabox::init();
 		
-		if ( ! class_exists( 'WPP_Content_Alias_Admin_Settings' ) )
-			require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-admin-settings.php' );
+		if ( ! class_exists( 'WPP_Content_Alias_Admin_Options' ) )
+			require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-admin-options.php' );
 		
-		WPP_Content_Alias_Admin_Settings::init();
+		WPP_Content_Alias_Admin_Options::init();
 		
 		self::$_initialized = true;
 	}

@@ -29,13 +29,13 @@ class WPP_Content_Alias {
 	/** Used to store the plugin settings */
 	private static $_settings = array();
 	
-	const PLUGIN_BASE_NAME        = 'wppContentAlias';
-	const SETTINGS_FORM_NONCENAME = 'wpp_content_alias_settings_noncename';
 	const POSTMETA_CONTENT_ALIAS  = '_wpp_content_alias';
 	const DEFAULT_REDIRECT_CODE   = 301;
 	const FILTER_ADD_ALIAS        = 'WPP_Content_Alias_Add_Alias';
 	const FILTER_SANITIZE_URL     = 'WPP_Content_Alias_Sanitize_Url';
 	const ACTION_URL_REDIRECT     = 'WPP_Content_Alias_Url_Redirect';
+	const ACTION_OPTION_BUILD_TAB = 'wpp_content_alias_build_tab';
+	const ACTION_OPTION_SAVE_TAB  = 'wpp_content_alias_save_tab';
 	
 	/**
 	 * Initialization point for the static class

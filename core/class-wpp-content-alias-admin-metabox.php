@@ -47,6 +47,10 @@ class WPP_Content_Alias_Admin_Metabox {
 	}
 	
 	/**
+	 * Function to value of initialized
+	 * 
+	 * This will return the current value of initialised, will be 
+	 * used for testing to see if init() has been run
 	 * 
 	 * @return boolean Returns the value of $_initialized
 	 */
@@ -57,16 +61,30 @@ class WPP_Content_Alias_Admin_Metabox {
 	/**
 	 * Test to see if we are in a valid location
 	 * 
-	 * This function is used to test to see if the current location is a valid one for the metabox
+	 * This function is used to test to see if the current location 
+	 * is a valid one for the metabox
 	 * 
 	 * @return boolean Returns true if we are in a valid location
 	 */
 	public static function valid_location() {
+		$screen = get_current_screen();
+		
+		if ( 'post' !== $screen->base )
+			return false;
+		
 		//TODO: add the business logic for doing the location checking
+		echo "<!-- FINDMENOW \n";
+		var_dump($screen);
+		echo "\n-->\n\n";
+		
 		return true;
 	}
 	
 	/**
+	 * WordPress admin_enqueue_scripts action hook
+	 * 
+	 * This hook is in place to allow use to add styles and scripts to
+	 * pages that need it
 	 * 
 	 * @return void No return value
 	 */
@@ -74,7 +92,7 @@ class WPP_Content_Alias_Admin_Metabox {
 		if ( ! self::isInit() ) //Function can not be called before init
 			return;
 		
-		if ( self::valid_location() ) {
+		if ( self::valid_location() ) { //Check to see if it is a valid location
 			//Register and Enqueue Style
 			wp_register_style(
 				self::STYLE_BASE, 

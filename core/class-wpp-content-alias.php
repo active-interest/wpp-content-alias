@@ -26,6 +26,7 @@
 class WPP_Content_Alias {
 	/** Used to keep the init state of the class */
 	private static $_initialized = false;
+	
 	/** Used to store the plugin settings */
 	private static $_settings = array();
 	
@@ -61,49 +62,23 @@ class WPP_Content_Alias {
 	 * @return string Returns the sanitized url
 	 */
 	public static function sanitize_url_path( $url_string ) {
-		self::init();
 		$url_string = apply_filters( self::FILTER_SANITIZE_URL, $url_string );
 		//TODO: add more sanitization here
+		
+		
+		
 		$parsed_url = parse_url( $url_string );
 		$parsed_path = $parsed_url['path'];
 		//If the parsed_path is not empty and does not start with / add it to the start
 		if ( !empty( $parsed_path ) && strncmp( $parsed_path, '/', 1 ) )
 			$parsed_path = '/' . $parsed_path;
 		
+		if ( '/' === $parsed_path) //We do not want a plan value of /
+			$parsed_path = '';
+		
 		if ( isset( $parsed_path ) && ! empty( $parsed_path ) )
 			return $parsed_path;
-		
 		else
 			return '';
-	}
-	
-	/**
-	 * Basic function for adding an alias
-	 * 
-	 * @param int $post_id The id of the post to add the alias for
-	 * @param string $post_alias The url path to add as an alias to the post
-	 * @return void No return value
-	 */
-	public static function add_alias( $post_id, $post_alias ) {
-		self::init();
-		$post_alias = apply_filters( self::FILTER_ADD_ALIAS, $post_alias );
-		$post_alias_path = self::sanitize_url_path( $post_alias );
-		if ( ! empty( $post_alias_path ) )
-			add_post_meta( $post_id, self::POSTMETA_CONTENT_ALIAS, $post_alias_path, false );
-	}
-	
-	/**
-	 * Helper function for the debug process
-	 * 
-	 * @param string $message The message to send to the error log
-	 * @return void No return value
-	 */
-	public static function debug( $message ) {
-		if ( WP_DEBUG === true ) {
-				if ( is_array( $message ) || is_object( $message ) )
-					error_log( print_r( $message, true ) );
-				else
-					error_log( $message );
-		}
-	}
+	}	
 }

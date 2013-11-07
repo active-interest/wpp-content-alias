@@ -43,7 +43,7 @@ class WPP_Content_Alias_Public {
 	public static function template_redirect() {
 		if ( is_404() ) {
 			$request_path = WPP_Content_Alias::sanitize_url_path( filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL ) );
-			$findPost = array(
+			$find_post = array(
 				'post_type'					=> 'any',
 				'numberposts'				=> '1',
 				'suppress_filters'	=> true,
@@ -56,7 +56,7 @@ class WPP_Content_Alias_Public {
 					),
 				),
 			);
-			$wp_query = new WP_Query( $findPost );
+			$wp_query = new WP_Query( $find_post );
 			if ( $wp_query->have_posts() ) {
 				$wp_query->next_post();
 				$redirect_url = get_permalink( $wp_query->post );

@@ -133,13 +133,7 @@ class WPP_Content_Alias_Admin_Metabox {
 		if ( ! wp_verify_nonce( filter_input( INPUT_POST, self::METABOX_FORM_NONCENAME, FILTER_SANITIZE_STRING ), plugin_basename( __FILE__ ) ) ) //Verify the form
 			return;
 		
-		delete_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS ); //Start off by deleting any excisting values
-		$post_aliases = filter_input( INPUT_POST, self::METABOX_FORM_CONTENT_ALIASES, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY );
-		if ( ! empty( $post_aliases ) ) {
-			foreach( (array) $post_aliases as $post_alias ) {
-				WPP_Content_Alias::add_alias( $post_id, $post_alias );
-			}
-		}
+		WPP_Content_Alias_Admin::sync_aliases( $post_id, filter_input( INPUT_POST, self::METABOX_FORM_CONTENT_ALIASES, FILTER_SANITIZE_STRING, FILTER_FORCE_ARRAY ) );
 	}
 	
 	/**

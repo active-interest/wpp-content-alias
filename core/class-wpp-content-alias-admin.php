@@ -57,6 +57,8 @@ class WPP_Content_Alias_Admin {
 		
 		add_action( 'pre_post_update', array( __CLASS__, 'pre_post_update' ) );
 		add_action( 'save_post', array( __CLASS__, 'save_post' ) );
+		//add_action( 'add_term_relationship', array( __CLASS__, 'add_term_relationship' ) );
+		//add_action( 'added_term_relationship', array( __CLASS__, 'added_term_relationship' ) );
 		
 		self::$_initialized = true;
 	}
@@ -69,14 +71,15 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function pre_post_update( $post_id ) {
+		wpp_content_alias_debug( 'pre_post_update: ' . $post_id );
 		if ( wp_is_post_revision( $post_id ) ) //Check to make sure it is not a revision
 			return;
 		
-		self::$_permalink_compare[ $post_id ] = array(
-			'permalink' => get_permalink( $post_id ),
-			'status' => get_post_status( $post_id ),
-		);
+		if ( ! isset( self::$_permalink_compare[ $post_id ] ) ) //Check to see if the post id has already been created
+			self::$_permalink_compare[ $post_id ] = array();
 		
+		self::$_permalink_compare[ $post_id ]['permalink'] = get_permalink( $post_id );
+		self::$_permalink_compare[ $post_id ]['status'] = get_post_status( $post_id );
 	}
 	
 	/**
@@ -87,6 +90,7 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function save_post( $post_id ) {
+		wpp_content_alias_debug( 'save_post: ' . $post_id );
 		if ( ! isset( self::$_permalink_compare[ $post_id ] ) ) //No need to run compare if there is no old value to check against
 			return;
 		
@@ -100,7 +104,8 @@ class WPP_Content_Alias_Admin {
 		$new_permalink = get_permalink( $post_id );
 		
 		if ( $old_permalink !== $new_permalink ) {
-			self::add_alias( $post_id, WPP_Content_Alias::sanitize_url_path( $old_permalink ) );
+			self::add_alias( $post_id, WPP_Content_Alias::sanitize_url_path( $old_permalink ), TRUE );
+			self::clean_sync( $post_id );
 		}
 		
 		unset( $old_permalink, $old_status, $new_status, $new_permalink ); //Clean up
@@ -114,9 +119,15 @@ class WPP_Content_Alias_Admin {
 	 * @param string $post_alias The url path to add as an alias to the post
 	 * @return boolean Boolean true.
 	 */
-	public static function add_alias( $post_id, $post_alias ) {
+	public static function add_alias( $post_id, $post_alias, $dup_check = false ) {
 		if ( isset( self::$_add_alias_cache[ $post_id ][ $post_alias ] ) ) 
 			return true; //we already added it
+		
+		if ( $dup_check ) {
+			$current_aliases = get_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS );
+			if ( in_array( $post_alias, $current_aliases) )
+				return true;
+		}
 		
 		$return_value = add_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS, $post_alias, false );
 		
@@ -188,5 +199,18 @@ class WPP_Content_Alias_Admin {
 			}
 		}
 		unset( $process_queue, $old_aliases, $post_sanitized_permalink, $new_alias, $old_alias, $post_alias, $is_add); //Clean up
+	}
+	
+	/**
+	 * Function for doing a clean sync agains the current aliases cleaning up any issues
+	 * 
+	 * @since 0.9.0
+	 * @param int $post_id The id of the post
+	 * @return void No return value
+	 */
+	public static function clean_sync( $post_id ) {
+		$aliases = get_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS );
+		self::sync_aliases( $post_id, $aliases);
+		unset( $aliases ); //Clean up
 	}
 }

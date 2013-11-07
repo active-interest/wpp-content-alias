@@ -206,8 +206,7 @@ class WPP_Content_Alias_Admin_Options {
 	 * 
 	 */
 	public static function build_tab_tracking() {
-		if ( ! class_exists( 'WPP_Content_Alias_List_Table' ) )
-			require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-list-table.php');
+		wpp_content_alias_init_class( 'WPP_Content_Alias_List_Table', '/core/class-wpp-content-alias-list-table.php');
 		
 		$stats_table = new WPP_Content_Alias_List_Table();
 		$stats_table->set_columns( array( 'url' => 'URL Paths', 'count' => 'Hits', 'last' => 'Last used', ) );

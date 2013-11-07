@@ -29,15 +29,8 @@ class WPP_Content_Alias_Admin {
 		if ( self::$_initialized ) 
 			return;
 		
-		if ( ! class_exists( 'WPP_Content_Alias_Admin_Metabox' ) )
-			require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-admin-metabox.php' );
-		
-		WPP_Content_Alias_Admin_Metabox::init();
-		
-		if ( ! class_exists( 'WPP_Content_Alias_Admin_Options' ) )
-			require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-admin-options.php' );
-		
-		WPP_Content_Alias_Admin_Options::init();
+		wpp_content_alias_init_class( 'WPP_Content_Alias_Admin_Metabox', '/core/class-wpp-content-alias-admin-metabox.php' );
+		wpp_content_alias_init_class( 'WPP_Content_Alias_Admin_Options', '/core/class-wpp-content-alias-admin-options.php' );
 		
 		self::$_initialized = true;
 	}

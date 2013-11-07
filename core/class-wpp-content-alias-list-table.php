@@ -43,7 +43,6 @@ class WPP_Content_Alias_List_Table extends WP_List_Table {
 	 * 
 	 */
 	public function set_data( $new_data ) {
-		WPP_Content_Alias::debug( $new_data );
 		$this->data = $new_data;
 	}
 	

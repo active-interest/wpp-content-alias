@@ -46,17 +46,11 @@ class WPP_Content_Alias {
 		if ( self::$_initialized )
 			return;
 		
-		if ( ! is_admin() ) {
-			if ( ! class_exists( 'WPP_Content_Alias_Public' ) )
-				require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-public.php' );
-			
-			WPP_Content_Alias_Public::init();
-		} else {
-			if ( ! class_exists( 'WPP_Content_Alias_Admin' ) )
-				require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias-admin.php' );
-			
-			WPP_Content_Alias_Admin::init();
-		}
+		if ( ! is_admin() )
+			wpp_content_alias_init_class( 'WPP_Content_Alias_Public', '/core/class-wpp-content-alias-public.php' );
+		else
+			wpp_content_alias_init_class( 'WPP_Content_Alias_Admin', '/core/class-wpp-content-alias-admin.php' );
+		
 		self::$_initialized = true;
 	}
 	

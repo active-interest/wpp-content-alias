@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) // We should not be loading this outside of wordpr
 	die();
 
 if ( ! defined( 'WPP_CONTENT_ALIAS_VERSION_NUM' ) )
-	define( 'WPP_CONTENT_ALIAS_VERSION_NUM', '0.9' );
+	define( 'WPP_CONTENT_ALIAS_VERSION_NUM', '0.9.0' );
 
 if ( ! defined( 'WPP_CONTENT_ALIAS_BUILD_NUM' ) )
 	define( 'WPP_CONTENT_ALIAS_BUILD_NUM', '1' );
@@ -49,7 +49,39 @@ if ( ! defined( 'WPP_CONTENT_ALIAS_PLUGIN_PATH' ) )
 if ( ! defined( 'WPP_CONTENT_ALIAS_FILTER_FILE' ) )
 	define( 'WPP_CONTENT_ALIAS_FILTER_FILE', 'wpp-content-alias/wpp-content-alias.php' );
 
-if ( ! class_exists( 'WPP_Content_Alias' ) )
-	require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . '/core/class-wpp-content-alias.php' );
+wpp_content_alias_init_class( 'WPP_Content_Alias', '/core/class-wpp-content-alias.php' );
 
-WPP_Content_Alias::init();
+/**
+ * Helper function for the checking is a class has been included
+ * 
+ * First the function checks to see if the class exists, if not it requires the file,
+ * once that is complete it calls the static class function init()
+ * 
+ * @since 0.9.0
+ * @param string $class_name The name of the class to check for
+ * @param string $class_path The relitive path to the file to include if the class does not exists
+ * @return void No return value
+ */
+function wpp_content_alias_init_class( $class_name, $class_path ) {
+	if ( ! class_exists( $class_name ) )
+		require_once( WPP_CONTENT_ALIAS_PLUGIN_PATH . $class_path );
+	
+	if ( method_exists( $class_name, 'init' ) )
+		call_user_func( array( $class_name, 'init' ) );
+}
+
+/**
+ * Helper function for the debug process
+ * 
+ * @since 0.9.0
+ * @param string $message The message to send to the error log
+ * @return void No return value
+ */
+function wpp_content_alias_debug( $message ) {
+	if ( WP_DEBUG === true ) {
+		if ( is_array( $message ) || is_object( $message ) )
+			error_log( print_r( $message, true ) );
+		else
+			error_log( $message );
+	}
+}

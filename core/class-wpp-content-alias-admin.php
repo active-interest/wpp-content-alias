@@ -57,6 +57,12 @@ class WPP_Content_Alias_Admin {
 		
 		add_action( 'pre_post_update', array( __CLASS__, 'pre_post_update' ) );
 		add_action( 'save_post', array( __CLASS__, 'save_post' ) );
+		add_action( 'add_term_relationship', array( __CLASS__, 'before_change_term' ) );
+		add_action( 'added_term_relationship', array( __CLASS__, 'after_change_term' ) );
+		add_action( 'delete_term_relationships', array( __CLASS__, 'before_change_term' ) );
+		add_action( 'deleted_term_relationships', array( __CLASS__, 'after_change_term' ) );
+		
+		
 		
 		self::$_initialized = true;
 	}
@@ -69,6 +75,7 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function pre_post_update( $post_id ) {
+		wpp_content_alias_debug( 'pre_post_update: ' . $post_id );
 		if ( wp_is_post_revision( $post_id ) ) //Check to make sure it is not a revision
 			return;
 		
@@ -77,8 +84,47 @@ class WPP_Content_Alias_Admin {
 		if ( ! isset( self::$_permalink_compare[ $post_id ] ) ) //Check to see if the post id has already been created
 			self::$_permalink_compare[ $post_id ] = array();
 		
+		self::$_permalink_compare[ $post_id ]['pre_post_update'] = TRUE;
 		self::$_permalink_compare[ $post_id ]['permalink'] = get_permalink( $post_id );
 		self::$_permalink_compare[ $post_id ]['status'] = get_post_status( $post_id );
+	}
+	
+	/**
+	 * Action hook function for add_term_relationship
+	 * 
+	 * @since 0.9.0
+	 * @param int $object_id The id of the object
+	 * @return void No return value
+	 */
+	public static function before_change_term( $object_id ) {
+		wpp_content_alias_debug( 'before_change_term: ' . $object_id );
+		if ( isset( self::$_permalink_compare[ $object_id ]['pre_post_update'] ) ) //If we have pre_post_update data then we dont need to do anything here
+			return;
+		
+		//TODO: add post type checking to not waste time if we are not using aliase for the post type
+		
+		if ( ! isset( self::$_permalink_compare[ $object_id ] ) ) //Check to see if the object id has already been created
+			self::$_permalink_compare[ $object_id ] = array();
+		
+		self::$_permalink_compare[ $object_id ]['permalink'] = get_permalink( $object_id );
+		self::$_permalink_compare[ $object_id ]['status'] = get_post_status( $object_id );
+	}
+	
+	/**
+	 * Action hook function for added_term_relationship
+	 * 
+	 * @since 0.9.0
+	 * @param int $object_id The id of the object
+	 * @return void No return value
+	 */
+	public static function after_change_term( $object_id ) {
+		wpp_content_alias_debug( 'after_change_term: ' . $object_id );
+		if ( isset( self::$_permalink_compare[ $object_id ]['pre_post_update'] ) ) //If we have pre_post_update data then we dont need to do anything here
+			return;
+		
+		//TODO: add post type checking to not waste time if we are not using aliase for the post type
+		
+		self::save_post( $object_id );
 	}
 	
 	/**
@@ -89,6 +135,7 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function save_post( $post_id ) {
+		wpp_content_alias_debug( 'save_post: ' . $post_id );		
 		if ( ! isset( self::$_permalink_compare[ $post_id ] ) ) //No need to run compare if there is no old value to check against
 			return;
 		

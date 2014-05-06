@@ -121,7 +121,7 @@ class WPP_Content_Alias_Admin_Metabox {
 		if ( ! self::isInit() ) //Function can not be called before init
 			return;
 		
-		if ( ! current_user_can( 'edit_page', $post_id ) ) //Check users permissions
+		if ( ! current_user_can( 'edit_post', $post_id ) ) //Check users permissions
 			return;
 		
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) //Check skip if we are only auto saving

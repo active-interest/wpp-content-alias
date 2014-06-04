@@ -29,6 +29,6 @@ Because we have not had the time to complete this? and or people have not asked.
 
 ## Changelog
 
-### 0.9 =
+### 0.9
 
 * Pre release version

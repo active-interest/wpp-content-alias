@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2013, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2013, WP Poets and/or its affiliates <wppoets@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -18,34 +18,34 @@
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  * 
- * @since 0.9.0
+ * @since 0.1.0
  */
 class WPP_Content_Alias_Admin {
 	/** 
 	 * Used to keep the init state of the class 
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 */
 	private static $_initialized = false;
 	
 	/** 
 	 * Used to keep the $post_id permalink for comparison
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 */
 	private static $_permalink_compare = array();
 	
 	/** 
 	 * Used to keep the add_alias function cache 
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 */
 	private static $_add_alias_cache = array();
 	
 	/**
 	 * Initialization point for the static class
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @return void No return value
 	 */
 	public static function init() {
@@ -70,7 +70,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Action hook function for pre_post_update
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @return void No return value
 	 */
@@ -92,7 +92,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Action hook function for add_term_relationship
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $object_id The id of the object
 	 * @return void No return value
 	 */
@@ -113,7 +113,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Action hook function for added_term_relationship
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $object_id The id of the object
 	 * @return void No return value
 	 */
@@ -130,7 +130,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Action hook function for save_post
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @return void No return value
 	 */
@@ -158,7 +158,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Basic function for adding an alias
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post to add the alias for
 	 * @param string $post_alias The url path to add as an alias to the post
 	 * @return boolean Boolean true.
@@ -188,7 +188,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Basic function for removing an alias
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @param string $post_alias The alias to remove from the post
 	 * @return boolean False for failure. True for success.
@@ -208,7 +208,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Basic function for syncing aliases
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @param array $new_aliases An array of all the new aliases to sync
 	 * @return void No return value
@@ -248,7 +248,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Function for doing a clean sync agains the current aliases cleaning up any issues
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @return void No return value
 	 */

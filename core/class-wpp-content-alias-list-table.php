@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2013, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2013, WP Poets and/or its affiliates <wppoets@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as

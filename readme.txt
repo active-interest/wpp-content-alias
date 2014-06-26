@@ -2,7 +2,7 @@
 Contributors: wppoets, michaeljstutz
 Tags: redirect, alias, aliases, 404, content alias, redirect content
 Requires at least: 3.5
-Tested up to: 3.5.1
+Tested up to: 3.9.1
 Stable tag: 1.0
 License: GPLv2 (dual-licensed)
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -33,9 +33,7 @@ Because we have not had the time to complete this? and or people have not asked.
 2. Metabox Screen
 
 == Changelog ==
-= 1.0 =
-* First major release
-= 0.9 =
+= 0.1.0 =
 * Pre release version
 
 == Upgrade Notice ==

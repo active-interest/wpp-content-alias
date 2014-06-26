@@ -75,7 +75,7 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function pre_post_update( $post_id ) {
-		wpp_content_alias_debug( 'pre_post_update: ' . $post_id );
+		//wpp_content_alias_debug( 'pre_post_update: ' . $post_id );
 		if ( wp_is_post_revision( $post_id ) ) //Check to make sure it is not a revision
 			return;
 		
@@ -97,7 +97,7 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function before_change_term( $object_id ) {
-		wpp_content_alias_debug( 'before_change_term: ' . $object_id );
+		//wpp_content_alias_debug( 'before_change_term: ' . $object_id );
 		if ( isset( self::$_permalink_compare[ $object_id ]['pre_post_update'] ) ) //If we have pre_post_update data then we dont need to do anything here
 			return;
 		
@@ -118,7 +118,7 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function after_change_term( $object_id ) {
-		wpp_content_alias_debug( 'after_change_term: ' . $object_id );
+		//wpp_content_alias_debug( 'after_change_term: ' . $object_id );
 		if ( isset( self::$_permalink_compare[ $object_id ]['pre_post_update'] ) ) //If we have pre_post_update data then we dont need to do anything here
 			return;
 		
@@ -135,7 +135,7 @@ class WPP_Content_Alias_Admin {
 	 * @return void No return value
 	 */
 	public static function save_post( $post_id ) {
-		wpp_content_alias_debug( 'save_post: ' . $post_id );		
+		//wpp_content_alias_debug( 'save_post: ' . $post_id );		
 		if ( ! isset( self::$_permalink_compare[ $post_id ] ) ) //No need to run compare if there is no old value to check against
 			return;
 		
@@ -217,13 +217,10 @@ class WPP_Content_Alias_Admin {
 		$process_queue = array();
 		$old_aliases = get_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS );
 		$post_sanitized_permalink = WPP_Content_Alias::sanitize_url_path( get_permalink( $post_id ) );
+		//Add the current sanitized url to the new_aliases 
+		$new_aliases[] = $post_sanitized_permalink;
 		foreach( $new_aliases as &$new_alias ) {
 			$new_alias = WPP_Content_Alias::sanitize_url_path( $new_alias ); //Need to sanitize the new aliases
-			
-			//If the new alias === post sanitized permalink then empty the new alias
-			if ( $new_alias === $post_sanitized_permalink )
-				$new_alias = '';
-			
 			//If the new alias is not empty, is not already in the queue, and is not already an alias
 			if ( ! empty( $new_alias ) && ! isset( $process_queue[ $new_alias ] ) &&  ! in_array( $new_alias, $old_aliases ) ) {
 				$process_queue[ $new_alias ] = TRUE; //Add to the queue to be added

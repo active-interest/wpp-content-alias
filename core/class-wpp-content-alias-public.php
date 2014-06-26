@@ -44,15 +44,15 @@ class WPP_Content_Alias_Public {
 		if ( is_404() ) {
 			$request_path = WPP_Content_Alias::sanitize_url_path( filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL ) );
 			$find_post = array(
-				'post_type'					=> 'any',
-				'numberposts'				=> '1',
-				'suppress_filters'	=> true,
-				'fields'						=> 'ids',
-				'meta_query'				=> array(
+				'post_type'         => 'any',
+				'numberposts'       => '1',
+				'suppress_filters'  => true,
+				'fields'            => 'ids',
+				'meta_query'        => array(
 					array(
-						'key'			=> WPP_Content_Alias::POSTMETA_CONTENT_ALIAS,
-						'value'		=> $request_path,
-						'compare' => '=',
+						'key'       => WPP_Content_Alias::POSTMETA_CONTENT_ALIAS,
+						'value'     => $request_path,
+						'compare'   => '=',
 					),
 				),
 			);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2013, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2013, WP Poets and/or its affiliates <wppoets@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -33,9 +33,9 @@ class WPP_Content_Alias_List_Table extends WP_List_Table {
 		$this->columns = array();
 		$this->data = array();
 		parent::__construct( array(
-			'singular'	=> 'wpp_content_alias_list',	//Singular label
-			'plural'		=> 'wpp_content_alias_lists', //plural label, also this well be one of the table css class
-			'ajax'			=> false,											//We won't support Ajax for this table
+			'singular'  => 'wpp_content_alias_list', //Singular label
+			'plural'    => 'wpp_content_alias_lists', //plural label, also this well be one of the table css class
+			'ajax'      => false, //We won't support Ajax for this table
 		) );
 	}
 	

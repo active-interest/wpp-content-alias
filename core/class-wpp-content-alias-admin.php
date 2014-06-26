@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2013, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2013, WP Poets and/or its affiliates <wppoets@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -18,34 +18,34 @@
 /**
  * @author Michael Stutz <michaeljstutz@gmail.com>
  * 
- * @since 0.9.0
+ * @since 0.1.0
  */
 class WPP_Content_Alias_Admin {
 	/** 
 	 * Used to keep the init state of the class 
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 */
 	private static $_initialized = false;
 	
 	/** 
 	 * Used to keep the $post_id permalink for comparison
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 */
 	private static $_permalink_compare = array();
 	
 	/** 
 	 * Used to keep the add_alias function cache 
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 */
 	private static $_add_alias_cache = array();
 	
 	/**
 	 * Initialization point for the static class
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @return void No return value
 	 */
 	public static function init() {
@@ -57,6 +57,12 @@ class WPP_Content_Alias_Admin {
 		
 		add_action( 'pre_post_update', array( __CLASS__, 'pre_post_update' ) );
 		add_action( 'save_post', array( __CLASS__, 'save_post' ) );
+		add_action( 'add_term_relationship', array( __CLASS__, 'before_change_term' ) );
+		add_action( 'added_term_relationship', array( __CLASS__, 'after_change_term' ) );
+		add_action( 'delete_term_relationships', array( __CLASS__, 'before_change_term' ) );
+		add_action( 'deleted_term_relationships', array( __CLASS__, 'after_change_term' ) );
+		
+		
 		
 		self::$_initialized = true;
 	}
@@ -64,11 +70,12 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Action hook function for pre_post_update
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @return void No return value
 	 */
 	public static function pre_post_update( $post_id ) {
+		//wpp_content_alias_debug( 'pre_post_update: ' . $post_id );
 		if ( wp_is_post_revision( $post_id ) ) //Check to make sure it is not a revision
 			return;
 		
@@ -77,18 +84,58 @@ class WPP_Content_Alias_Admin {
 		if ( ! isset( self::$_permalink_compare[ $post_id ] ) ) //Check to see if the post id has already been created
 			self::$_permalink_compare[ $post_id ] = array();
 		
+		self::$_permalink_compare[ $post_id ]['pre_post_update'] = TRUE;
 		self::$_permalink_compare[ $post_id ]['permalink'] = get_permalink( $post_id );
 		self::$_permalink_compare[ $post_id ]['status'] = get_post_status( $post_id );
 	}
 	
 	/**
+	 * Action hook function for add_term_relationship
+	 * 
+	 * @since 0.1.0
+	 * @param int $object_id The id of the object
+	 * @return void No return value
+	 */
+	public static function before_change_term( $object_id ) {
+		//wpp_content_alias_debug( 'before_change_term: ' . $object_id );
+		if ( isset( self::$_permalink_compare[ $object_id ]['pre_post_update'] ) ) //If we have pre_post_update data then we dont need to do anything here
+			return;
+		
+		//TODO: add post type checking to not waste time if we are not using aliase for the post type
+		
+		if ( ! isset( self::$_permalink_compare[ $object_id ] ) ) //Check to see if the object id has already been created
+			self::$_permalink_compare[ $object_id ] = array();
+		
+		self::$_permalink_compare[ $object_id ]['permalink'] = get_permalink( $object_id );
+		self::$_permalink_compare[ $object_id ]['status'] = get_post_status( $object_id );
+	}
+	
+	/**
+	 * Action hook function for added_term_relationship
+	 * 
+	 * @since 0.1.0
+	 * @param int $object_id The id of the object
+	 * @return void No return value
+	 */
+	public static function after_change_term( $object_id ) {
+		//wpp_content_alias_debug( 'after_change_term: ' . $object_id );
+		if ( isset( self::$_permalink_compare[ $object_id ]['pre_post_update'] ) ) //If we have pre_post_update data then we dont need to do anything here
+			return;
+		
+		//TODO: add post type checking to not waste time if we are not using aliase for the post type
+		
+		self::save_post( $object_id );
+	}
+	
+	/**
 	 * Action hook function for save_post
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @return void No return value
 	 */
 	public static function save_post( $post_id ) {
+		//wpp_content_alias_debug( 'save_post: ' . $post_id );		
 		if ( ! isset( self::$_permalink_compare[ $post_id ] ) ) //No need to run compare if there is no old value to check against
 			return;
 		
@@ -111,7 +158,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Basic function for adding an alias
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post to add the alias for
 	 * @param string $post_alias The url path to add as an alias to the post
 	 * @return boolean Boolean true.
@@ -141,7 +188,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Basic function for removing an alias
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @param string $post_alias The alias to remove from the post
 	 * @return boolean False for failure. True for success.
@@ -161,7 +208,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Basic function for syncing aliases
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @param array $new_aliases An array of all the new aliases to sync
 	 * @return void No return value
@@ -170,13 +217,10 @@ class WPP_Content_Alias_Admin {
 		$process_queue = array();
 		$old_aliases = get_post_meta( $post_id, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS );
 		$post_sanitized_permalink = WPP_Content_Alias::sanitize_url_path( get_permalink( $post_id ) );
+		//Add the current sanitized url to the new_aliases 
+		$new_aliases[] = $post_sanitized_permalink;
 		foreach( $new_aliases as &$new_alias ) {
 			$new_alias = WPP_Content_Alias::sanitize_url_path( $new_alias ); //Need to sanitize the new aliases
-			
-			//If the new alias === post sanitized permalink then empty the new alias
-			if ( $new_alias === $post_sanitized_permalink )
-				$new_alias = '';
-			
 			//If the new alias is not empty, is not already in the queue, and is not already an alias
 			if ( ! empty( $new_alias ) && ! isset( $process_queue[ $new_alias ] ) &&  ! in_array( $new_alias, $old_aliases ) ) {
 				$process_queue[ $new_alias ] = TRUE; //Add to the queue to be added
@@ -201,7 +245,7 @@ class WPP_Content_Alias_Admin {
 	/**
 	 * Function for doing a clean sync agains the current aliases cleaning up any issues
 	 * 
-	 * @since 0.9.0
+	 * @since 0.1.0
 	 * @param int $post_id The id of the post
 	 * @return void No return value
 	 */

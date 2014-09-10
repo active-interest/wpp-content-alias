@@ -85,3 +85,7 @@ function wpp_content_alias_debug( $message ) {
 			error_log( $message );
 	}
 }
+
+if(defined('WP_CLI') && WP_CLI) {
+	include __DIR__ . '/cli-command.php';
+}

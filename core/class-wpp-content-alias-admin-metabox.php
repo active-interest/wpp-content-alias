@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2013, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2013, WP Poets and/or its affiliates <wppoets@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -171,6 +171,7 @@ class WPP_Content_Alias_Admin_Metabox {
 		
 		wp_nonce_field( plugin_basename( __FILE__ ), self::METABOX_FORM_NONCENAME );
 		$post_aliases = get_post_meta( $post->ID, WPP_Content_Alias::POSTMETA_CONTENT_ALIAS, false );
+		$post_sanitized_permalink = WPP_Content_Alias::sanitize_url_path( get_permalink( $post->ID ) );
 		// Start HTML for meta boxes ?>
 		<table id="wppca-alias-list" width="100%">
 		<thead><tr>
@@ -184,7 +185,8 @@ class WPP_Content_Alias_Admin_Metabox {
 			<td><a class="button wppca-remove-row" href="#">-</a></td>
 		</tr>
 		<?php else : ?>
-			<?php foreach( (array) $post_aliases as $post_alias ) : ?>
+			<?php foreach ( (array) $post_aliases as $post_alias ) : ?>
+				<?php if ( $post_alias == $post_sanitized_permalink ) : continue; endif; ?>
 		<tr>
 			<td><input type="text" class="widefat" name="<?php echo self::METABOX_FORM_CONTENT_ALIASES; ?>[]" value="<?php echo $post_alias; ?>" readonly/></td>
 			<td><a class="button wppca-remove-row" href="#">-</a></td>

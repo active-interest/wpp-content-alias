@@ -3,7 +3,7 @@
  * Plugin Name: WPP Redirect with Content Alias
  * Plugin URI: http://wppoets.com/plugins/content-alias.html
  * Description: Adds content alias 301 redirect functionality to all the WordPress content types for your site. This helps to reduce 404 errors when moving content and or migrated to WordPress.
- * Version: 0.1.0
+ * Version: 0.9.1
  * Author: WP Poets <wppoets@gmail.com>
  * Author URI: http://wppoets.com
  * License: GPLv2 (dual-licensed)

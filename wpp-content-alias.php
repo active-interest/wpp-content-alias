@@ -3,14 +3,14 @@
  * Plugin Name: WPP Redirect with Content Alias
  * Plugin URI: http://wppoets.com/plugins/content-alias.html
  * Description: Adds content alias 301 redirect functionality to all the WordPress content types for your site. This helps to reduce 404 errors when moving content and or migrated to WordPress.
- * Version: 0.9
- * Author: WP Poets <plugins@wppoets.com>
+ * Version: 0.9.1
+ * Author: WP Poets <wppoets@gmail.com>
  * Author URI: http://wppoets.com
  * License: GPLv2 (dual-licensed)
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 /**
- * Copyright (c) 2013, WP Poets and/or its affiliates <plugins@wppoets.com>
+ * Copyright (c) 2013, WP Poets and/or its affiliates <wppoets@gmail.com>
  * Portions of this distribution are copyrighted by:
  *   Copyright (c) 2013 Michael Stutz <michaeljstutz@gmail.com>
  * All rights reserved.
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) // We should not be loading this outside of wordpr
 	die();
 
 if ( ! defined( 'WPP_CONTENT_ALIAS_VERSION_NUM' ) )
-	define( 'WPP_CONTENT_ALIAS_VERSION_NUM', '0.9.0' );
+	define( 'WPP_CONTENT_ALIAS_VERSION_NUM', '0.1.0' );
 
 if ( ! defined( 'WPP_CONTENT_ALIAS_BUILD_NUM' ) )
 	define( 'WPP_CONTENT_ALIAS_BUILD_NUM', '1' );
@@ -57,7 +57,7 @@ wpp_content_alias_init_class( 'WPP_Content_Alias', '/core/class-wpp-content-alia
  * First the function checks to see if the class exists, if not it requires the file,
  * once that is complete it calls the static class function init()
  * 
- * @since 0.9.0
+ * @since 0.1.0
  * @param string $class_name The name of the class to check for
  * @param string $class_path The relitive path to the file to include if the class does not exists
  * @return void No return value
@@ -73,7 +73,7 @@ function wpp_content_alias_init_class( $class_name, $class_path ) {
 /**
  * Helper function for the debug process
  * 
- * @since 0.9.0
+ * @since 0.1.0
  * @param string $message The message to send to the error log
  * @return void No return value
  */
@@ -84,4 +84,8 @@ function wpp_content_alias_debug( $message ) {
 		else
 			error_log( $message );
 	}
+}
+
+if(defined('WP_CLI') && WP_CLI) {
+	include __DIR__ . '/cli-command.php';
 }
